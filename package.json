@@ -1,0 +1,30 @@
+{
+  "name": "extendcompose",
+  "version": "1.0.0",
+  "description": "a drop-in replacement for Backbone.[Model|View|Router|etc...].extend that suports automatic composing of child properties with parent properties",
+  "author": "1stdibs.com, Inc.",
+  "scripts": {
+    "test": "mocha",
+    "gitlint": "node_modules/.bin/dibslint --git --warnings",
+    "lint": "dibslint --root=."
+  },
+  "main": "index.js",
+  "pre-commit": {
+    "run": [
+      "gitlint"
+    ]
+  },
+  "devDependencies": {
+    "dibslint": "^1.2.4",
+    "lodash.omit": "^4.0.1",
+    "mocha": "^2.3.4",
+    "pre-commit": "^1.1.2",
+    "sinon": "^1.17.2"
+  },
+  "dependencies": {
+    "class-extend": "^0.1.2",
+    "lodash.assign": "^4.0.0",
+    "lodash.foreach": "^4.0.0",
+    "lodash.isarray": "^4.0.0"
+  }
+}
