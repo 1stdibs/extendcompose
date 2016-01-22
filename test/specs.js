@@ -73,20 +73,16 @@ describe("extendCompose", function () {
                 ExtendedConstructor = exextendcompose.call(MyConstructor, childPrototype);
                 assert(middlewareRan);
             });
-            it('should always use the prototype returned by the middleware', () => {
+            it('should use the same prototype object instead of whatever afterPrototype returns', () => {
+                let passedChildPrototype;
                 let ExtendedView = extendCompose.withMiddleware({
                     afterPrototype: (
                         parentPrototype,
                         childPrototypeBefore,
                         childPrototypeAfter
-                    ) => ({fizz: 789})
-                }).call(
-                    View.extend({bar: 432}),
-                    {foo: 123}
-                );
-                assert.equal(ExtendedView.prototype.foo, undefined);
-                assert.equal(ExtendedView.prototype.bar, undefined);
-                assert.equal(ExtendedView.prototype.fizz, 789);
+                    ) => passedChildPrototype = childPrototypeAfter
+                }).call(View.extend());
+                assert.strictEqual(ExtendedView.prototype, passedChildPrototype);
             });
             it('should compose with previously applied middleware', () => {
                 let extendComposeWithMiddleware = extendCompose.withMiddleware({
@@ -94,16 +90,16 @@ describe("extendCompose", function () {
                         parentPrototype,
                         childPrototypeBefore,
                         childPrototypeAfter
-                    ) => ({
-                        fizz: 1,
-                        buzz: true
-                    })
+                    ) => {
+                        childPrototypeAfter.fizz = 1;
+                        childPrototypeAfter.buzz = true;
+                    }
                 }).withMiddleware({
                     afterPrototype: (
                         parentPrototype,
                         childPrototypeBefore,
                         childPrototypeAfter
-                    ) => Object.assign({}, childPrototypeAfter, {fizz: 2})
+                    ) => childPrototypeAfter.fizz = 2
                 });
                 let ExtendedView = extendComposeWithMiddleware.call(MyConstructor);
                 assert.equal(ExtendedView.prototype.fizz, 2);
@@ -115,7 +111,7 @@ describe("extendCompose", function () {
                         parentPrototype,
                         childPrototypeBefore,
                         childPrototypeAfter
-                    ) => Object.assign({}, childPrototypeAfter, {fizz: true})
+                    ) => childPrototypeAfter.fizz = true
                 });
                 const MySubclass = extendedExtendCompose.call(MyConstructor, {});
                 const MySubSubclass = MySubclass.extend({});

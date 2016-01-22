@@ -64,9 +64,7 @@ composeWith = function (parent, sub, newproperties, staticProperties) {
 };
 ExtendCompose = function () {};
 ExtendCompose.prototype.middleware = {
-    afterPrototype: function (parentPrototype, childPrototypeBefore, childPrototypeAfter) {
-        return childPrototypeAfter; // noop
-    }
+    afterPrototype: function () {} // noop
 };
 ExtendCompose.prototype.exportBuilder = function () {
     var self = this;
@@ -79,8 +77,15 @@ ExtendCompose.prototype.exportBuilder = function () {
         sub = extend.call(parent, protos, statics);
         sub.extend = ecExport;
         sub.extendSelf = function () {
-            composeWith.apply(this, [parent, sub].concat(Array.prototype.slice.apply(arguments))); // mutates sub
-            sub.prototype = self.middleware.afterPrototype(parent.prototype, protos, sub.prototype);
+            composeWith.apply(this, [
+                parent,
+                sub
+            ].concat(Array.prototype.slice.apply(arguments))); // mutates sub
+            self.middleware.afterPrototype(
+                parent.prototype,
+                protos,
+                sub.prototype
+            );
             return sub;
         };
         sub.extendSelf(sub.prototype);
@@ -99,15 +104,16 @@ ExtendCompose.prototype.withMiddleware = function (middleware) {
     if (middleware.afterPrototype) {
         newEc.middleware = Object.assign({}, Object.assign({}, parentEc.middleware, {
             afterPrototype: function (parentPrototype, childPrototypeBefore, childPrototypeAfter) {
-                return middleware.afterPrototype(
+                parentEc.middleware.afterPrototype( // may mutate childPrototypeAfter
                     parentPrototype,
                     childPrototypeBefore,
-                    parentEc.middleware.afterPrototype(
-                        parentPrototype,
-                        childPrototypeBefore,
-                        childPrototypeAfter
-                    )
-                )
+                    childPrototypeAfter
+                );
+                middleware.afterPrototype( // may mutate childPrototypeAfter again
+                    parentPrototype,
+                    childPrototypeBefore,
+                    childPrototypeAfter
+                );
             }
         }));
     }
