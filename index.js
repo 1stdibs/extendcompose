@@ -68,7 +68,7 @@ ExtendCompose.prototype.middleware = {
 };
 ExtendCompose.prototype.exportBuilder = function () {
     var self = this;
-    var ecExport = Object.assign(function (protos, statics) {
+    var ecExport = assign(function (protos, statics) {
         var parent = this;
         var sub;
         if (protos instanceof Array) {
@@ -97,12 +97,12 @@ ExtendCompose.prototype.exportBuilder = function () {
 };
 ExtendCompose.prototype.withMiddleware = function (middleware) {
     var parentEc = this;
-    var NewExtendCompose = Object.assign(function () {}, {
+    var NewExtendCompose = assign(function () {}, {
         prototype: this
     });
     var newEc = new NewExtendCompose();
     if (middleware.afterPrototype) {
-        newEc.middleware = Object.assign({}, Object.assign({}, parentEc.middleware, {
+        newEc.middleware = assign({}, assign({}, parentEc.middleware, {
             afterPrototype: function (parentPrototype, childPrototypeBefore, childPrototypeAfter) {
                 parentEc.middleware.afterPrototype( // may mutate childPrototypeAfter
                     parentPrototype,
