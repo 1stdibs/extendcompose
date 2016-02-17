@@ -1,6 +1,6 @@
 {
   "name": "extendcompose",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "a drop-in replacement for Backbone.[Model|View|Router|etc...].extend that suports automatic composing of child properties with parent properties",
   "author": "1stdibs.com, Inc.",
   "scripts": {
